@@ -91,10 +91,15 @@ class _AddProductState extends State<AddProduct> {
         }
       }
       if (checkFile) {
-        print('## choose 4 image success');
+        // print('## choose 4 image success');
+
+        MyDialog().ShowProgressDialog(context);
+
+        
         String apiSaveProduct =
             '${MyConstant.domain}/shoppingmall/saveProduct.php';
 
+        int loop = 0;
         for (var item in files) {
           int i = Random().nextInt(1000000);
           String nameFile = 'products$i.jpg';
@@ -104,7 +109,14 @@ class _AddProductState extends State<AddProduct> {
           FormData data = FormData.fromMap(map);
           await Dio()
               .post(apiSaveProduct, data: data)
-              .then((value) => print('Upload Success'));
+              .then((value) {
+                print('Upload Success');
+                loop++;
+                if (loop>=files.length) {
+                  Navigator.pop(context);
+                } 
+                
+              });
         }
       } else {
         MyDialog()
