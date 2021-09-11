@@ -226,7 +226,7 @@ class _AuthenState extends State<Authen> {
         Container(
           margin: EdgeInsets.symmetric(vertical: 16),
           width: size * 0.5,
-          child: ShowImage(path: MyConstant.image5),
+          child: ShowImage(path: MyConstant.renka),
         ),
       ],
     );

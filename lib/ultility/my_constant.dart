@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MyConstant {
   // Genernal 
   static String appName = 'Miragez Project';
-  static String domain = 'https://15bd-49-228-164-184.ngrok.io';
+  static String domain = 'https://26ab-49-228-164-184.ngrok.io';
 
   // Route
   static String routeAuthen = '/authen';
@@ -11,6 +11,7 @@ class MyConstant {
   static String routeBuyerService = '/buyerService';
   static String routeSalerService = '/salerService';
   static String routeRiderService = '/riderService';
+  static String routeAddProduct = '/addProduct';
 
   //image
   static String image1 = 'images/image1.png';
@@ -19,6 +20,7 @@ class MyConstant {
   static String image4 = 'images/image4.png';
   static String image5 = 'images/image5.png';
   static String avatar = 'images/avatar.png';
+  static String renka = 'images/renka.jpg';
 
   //Color
   static Color primary = Color(0xff01579b);

@@ -9,28 +9,18 @@ class ShowProductSeller extends StatefulWidget {
 }
 
 
+
+
 class _ShowProductSellerState extends State<ShowProductSeller> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Text('This is Show Product'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =>
+            Navigator.pushNamed(context, MyConstant.routeAddProduct),
+            child: Text('Add'),
+      ),
     );
   }
 }
-
-
-
-
-// class _ShowProductSellerState extends State<ShowProductSeller> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Text('This is Show Product'),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () =>
-//             Navigator.pushNamed(context, MyConstant.routeAddProduct),
-//             child: Text('Add'),
-//       ),
-//     );
-//   }
-// }
