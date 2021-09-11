@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,7 +22,6 @@ class _AddProductState extends State<AddProduct> {
   List<File?> files = [];
   File? file;
 
-
   void initState() {
     super.initState();
     initialFile();
@@ -35,7 +36,12 @@ class _AddProductState extends State<AddProduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(actions: [IconButton(onPressed: ()=> processAddProduct(), icon: Icon(Icons.cloud_upload))],
+      appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () => processAddProduct(),
+              icon: Icon(Icons.cloud_upload))
+        ],
         title: Text('Add Product'),
       ),
       body: LayoutBuilder(
@@ -76,19 +82,33 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  void processAddProduct() {
+  void processAddProduct() async {
     if (formKey.currentState!.validate()) {
-
       bool checkFile = true;
       for (var item in files) {
         if (item == null) {
-          checkFile = false;          
+          checkFile = false;
         }
       }
       if (checkFile) {
         print('## choose 4 image success');
+        String apiSaveProduct =
+            '${MyConstant.domain}/shoppingmall/saveProduct.php';
+
+        for (var item in files) {
+          int i = Random().nextInt(1000000);
+          String nameFile = 'products$i.jpg';
+          Map<String, dynamic> map = {};
+          map['file'] =
+              await MultipartFile.fromFile(item!.path, filename: nameFile);
+          FormData data = FormData.fromMap(map);
+          await Dio()
+              .post(apiSaveProduct, data: data)
+              .then((value) => print('Upload Success'));
+        }
       } else {
-        MyDialog().normalDialog(context, 'More Image', 'Plase Choose More Image');
+        MyDialog()
+            .normalDialog(context, 'More Image', 'Plase Choose More Image');
       }
     }
   }
