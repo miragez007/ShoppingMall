@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shoppingmall/ultility/my_constant.dart';
 import 'package:shoppingmall/ultility/my_dialog.dart';
 import 'package:shoppingmall/widgets/show_image.dart';
@@ -21,7 +22,15 @@ class _AddProductState extends State<AddProduct> {
   final formKey = GlobalKey<FormState>();
   List<File?> files = [];
   File? file;
+  
+  TextEditingController nameController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController detailController = TextEditingController();
+  List<String> paths = [];
 
+
+
+  @override
   void initState() {
     super.initState();
     initialFile();
@@ -30,10 +39,10 @@ class _AddProductState extends State<AddProduct> {
   void initialFile() {
     for (var i = 0; i < 4; i++) {
       files.add(null);
-    }
+     }
   }
 
-  @override
+  
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -58,7 +67,7 @@ class _AddProductState extends State<AddProduct> {
                     buildProductPrice(constraints),
                     buildProductDetail(constraints),
                     buildImage(constraints),
-                    buildProductButton(constraints),
+                    addProductButton(constraints),
                   ],
                 ),
               ),
@@ -69,7 +78,7 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Container buildProductButton(BoxConstraints constraints) {
+  Container addProductButton(BoxConstraints constraints) {
     return Container(
       width: constraints.maxWidth * 0.75,
       child: ElevatedButton(
@@ -103,16 +112,38 @@ class _AddProductState extends State<AddProduct> {
         for (var item in files) {
           int i = Random().nextInt(1000000);
           String nameFile = 'products$i.jpg';
+          
+          paths.add('/product/$nameFile');
+          
           Map<String, dynamic> map = {};
           map['file'] =
               await MultipartFile.fromFile(item!.path, filename: nameFile);
           FormData data = FormData.fromMap(map);
           await Dio()
               .post(apiSaveProduct, data: data)
-              .then((value) {
+              .then((value) async{
                 print('Upload Success');
                 loop++;
                 if (loop>=files.length) {
+                  SharedPreferences preference = 
+                  await SharedPreferences.getInstance();
+                  String idSeller = preference.getString('id')!;
+                  String nameSeller = preference.getString('name')!;
+                  String name = nameController.text;
+                  String price = priceController.text;
+                  String detail = detailController.text;
+                  String images = paths.toString();
+                  
+
+                  
+                  print('### idSeller = $idSeller, nameSeller = $nameSeller');
+                  print('### name = $name, price = $price , detail = $detail');
+                  print('### images ==> $images ');
+
+                  String path = '${MyConstant.domain}/shoppingmall/insertProduct.php?isAdd=true&idSeller=$idSeller&nameSeller=$nameSeller&name=$name&price=$price&images=$images&detail=$detail';
+
+                  await Dio().get(path).then((value) => Navigator.pop(context));
+
                   Navigator.pop(context);
                 } 
                 
@@ -255,13 +286,12 @@ class _AddProductState extends State<AddProduct> {
       ],
     );
   }
-}
 
-Widget buildProductName(BoxConstraints constraints) {
+  Widget buildProductName(BoxConstraints constraints) {
   return Container(
     width: constraints.maxWidth * 0.75,
     margin: EdgeInsets.only(top: 16),
-    child: TextFormField(
+    child: TextFormField(controller: nameController,
       validator: (value) {
         if (value!.isEmpty) {
           return 'Plase Fill Name in Blank';
@@ -297,7 +327,7 @@ Widget buildProductPrice(BoxConstraints constraints) {
   return Container(
     width: constraints.maxWidth * 0.75,
     margin: EdgeInsets.only(top: 16),
-    child: TextFormField(
+    child: TextFormField(controller: priceController,
       validator: (value) {
         if (value!.isEmpty) {
           return 'Plase Fill Price in Blank';
@@ -334,7 +364,7 @@ Widget buildProductDetail(BoxConstraints constraints) {
   return Container(
     width: constraints.maxWidth * 0.75,
     margin: EdgeInsets.only(top: 16),
-    child: TextFormField(
+    child: TextFormField(controller: detailController,
       validator: (value) {
         if (value!.isEmpty) {
           return 'Plase Fill Detail in Blank';
@@ -369,3 +399,6 @@ Widget buildProductDetail(BoxConstraints constraints) {
     ),
   );
 }
+
+}
+
